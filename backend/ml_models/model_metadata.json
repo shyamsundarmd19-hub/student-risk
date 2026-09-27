@@ -1,0 +1,25 @@
+{
+  "model_type": "RandomForestRegressor",
+  "n_estimators": 100,
+  "features": [
+    "attendance",
+    "internal_marks",
+    "assignment_marks",
+    "study_hours",
+    "previous_score"
+  ],
+  "metrics": {
+    "mae": 3.2065,
+    "rmse": 3.9165,
+    "r2_score": 0.8953
+  },
+  "feature_importances": {
+    "attendance": 0.0397,
+    "internal_marks": 0.4699,
+    "assignment_marks": 0.272,
+    "study_hours": 0.1358,
+    "previous_score": 0.0827
+  },
+  "trained_at": "2026-09-25T13:14:47.372663Z",
+  "version": "1.0.0"
+}
