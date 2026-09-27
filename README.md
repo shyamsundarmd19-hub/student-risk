@@ -1,66 +1,70 @@
-# SwiftTrack - Real-Time Order Tracking & Logistics Platform
+# StudentRisk - Cloud-Based Student Performance Prediction & Early Warning System
 
-A full-stack, enterprise-grade logistics fulfillment and order tracking platform built with Python Flask, MongoDB / JSON Fallback, Leaflet.js, JavaScript (ES6), and HTML5/CSS3.
+A full-stack, enterprise-grade cloud architecture for tracking academic trajectories, predicting student performance, generating early warning alerts, and providing explainable ML insights with SHAP. Built with **FastAPI (Python 3.10+)**, **React (Vite + Tailwind CSS)**, **PostgreSQL / SQLite Adaptive Fallback**, **Scikit-learn**, and **SHAP**.
 
 ---
 
 ## 🌟 Key Features
 
-### Authentication & Role-Based Access Control
-- **Admin Login**: Secure PIN-based authentication (`admin123`).
-- **Role-Protected Routes**: Administrative endpoints for dispatch management and operations control.
-- **Customer Self-Service Portal**: Zero authentication needed for real-time tracking via unique Order IDs.
+### Authentication & Role-Based Access Control (RBAC)
+- **Role-Based Portals**: Dedicated, isolated workspaces for **Students** and **Faculty / Academic Advisors**.
+- **JWT-Secured Endpoints**: Stateless authentication utilizing `pyjwt` and `bcrypt` password hashing with auto-refreshing sessions.
+- **Automatic Account Seeding**: Pre-configured demo student and faculty profiles initialized on first launch.
 
-### Customer Tracking & Fulfillment Module
-- **Real-Time 6-Stage Milestone Tracker**: `Order Placed` → `Confirmed` → `Packed` → `Shipped` → `Out for Delivery` → `Delivered`.
-- **Instant Order Cancellation**: Available exclusively during the initial `Order Placed` status.
-- **Secure Auto-Generated 4-Digit Delivery OTP**: Attached to every consignment for physical handover verification.
-- **Printable Order Invoices**: Detailed price breakdowns, taxes, shipping costs, and print-optimized CSS layout.
-- **Dynamic Client-Side QR Code Pass**: Powered by `qrcode.js` encoding direct tracking URLs (`/?track=ORD...`).
+### Machine Learning & Explainable AI (SHAP)
+- **Random Forest Prediction Engine**: Serialized ML model (`rf_model.pkl`) evaluating multi-dimensional academic metrics (attendance %, internal marks, assignments, study hours, previous scores).
+- **Early Warning Risk Classification**: Real-time student categorization into `Good`, `Average`, or `At-Risk` status with calculated risk probabilities.
+- **TreeExplainer SHAP Interpretability**: Local feature contribution breakdown visualizing exact positive and negative point impacts per academic input.
+- **Automated Advisory Recommendations**: Intelligent generation of targeted interventions and weak-area study prescriptions based on model outputs.
 
-### Geospatial Radar & Interactive Mapping
-- **Zero-API-Key Interactive Routing**: Powered by Leaflet.js and OpenStreetMap.
-- **Real-Time Waypoint Plotting**: Origin Warehouses (🏭), Sorting Hubs (🚚), Destination Addresses (🏠), and Live Delivery Couriers (📍) with pulsating radar animations.
-- **Dynamic Polyline Route Curves**: Visual link generation between origin and destination coordinates.
+### Interactive What-If Grade Simulator
+- **Live Parameter Experimentation**: Interactive slider controls for attendance percentage, study hours, and continuous assessments.
+- **Instant ML Inference**: Immediate score delta recalculation and risk status re-evaluation to simulate potential grade improvements prior to final examinations.
 
-### Operations & Logistics Management
-- **Live Operations Counters**: Real-time stats for Total Orders, Pending/Processing, In-Transit, and Delivered.
-- **Live Status Dispatcher**: Instant updates for package state and hub locations by warehouse operators.
-- **Strict OTP Verification Barrier**: Deliveries cannot be marked as `Delivered` without the customer's matching 4-digit PIN.
-- **Dispatch Hub Manager**: Configure active fulfillment hubs and update administrator access PINs dynamically.
-- **One-Click Bulk Export**: Export order logs, timestamps, OTPs, and customer reviews into structured `.csv` files.
+### Faculty Cohort Intelligence & Analytics
+- **Cohort Risk Heatmap Matrix**: High-visibility risk dashboard highlighting at-risk students, attendance deficits, and intervention urgencies.
+- **Departmental & Subject Analytics**: Aggregated class performance distributions visualized with interactive Recharts graphs.
+- **Historical Trajectory Tracking**: Multi-semester academic trend curves and continuous assessment monitoring.
 
 ### Dual-Engine Intelligent Persistence
-- **MongoDB Cloud & Local Support**: Connect directly via `MONGO_URI` to MongoDB Atlas or local daemon.
-- **Zero-Setup Local Disk Fallback**: Automatic virtual DB with `mongomock` and JSON disk persistence (`backend/data/orders.json` & `backend/data/settings.json`) when no database server is installed.
-
-### Post-Delivery Feedback Module
-- **Automatic In-App Feedback Prompt**: Displayed immediately upon successful delivery confirmation.
-- **5-Star Rating & Review System**: Qualitative comment submission stored directly in the database.
+- **PostgreSQL Production Support**: High-performance relational database support via Docker Compose and standard `DATABASE_URL` configurations.
+- **Zero-Setup Local SQLite Fallback**: Automatic, seamless fallback to local SQLite storage (`student_performance.db`) when no PostgreSQL instance is detected, requiring zero database setup.
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-order-tracking-/
+student-risk/
 ├── backend/
-│   ├── app.py              # Main Flask application, REST APIs & logic
-│   ├── requirements.txt    # Backend Python dependencies
-│   └── data/               # Persistent disk fallback storage
-│       ├── orders.json     # Serialized order entries
-│       └── settings.json   # Configuration and active hub records
+│   ├── Dockerfile                  # Container definition for FastAPI backend
+│   ├── requirements.txt            # Backend Python dependencies
+│   ├── .env.example                # Example environment variables
+│   ├── app/
+│   │   ├── main.py                 # FastAPI application entrypoint & CORS
+│   │   ├── api/v1/                 # RESTful API routers (Auth, Academic, Dashboard, Prediction)
+│   │   ├── core/                   # Security, DB engine configuration, and seeder
+│   │   ├── models/                 # SQLAlchemy ORM models (Users, Profiles, Metrics, Predictions)
+│   │   ├── schemas/                # Pydantic v2 validation schemas
+│   │   └── services/               # ML inference service & SHAP explainer
+│   ├── ml_models/                  # Serialized ML artifacts (RandomForest, Scaler, SHAP)
+│   └── scripts/                    # Model training and dataset generation scripts
 ├── frontend/
-│   ├── templates/
-│   │   └── index.html      # Master SPA layout, modals, map & timeline
-│   └── static/
-│       ├── css/
-│       │   └── style.css   # Custom warm amber styling, tokens & components
-│       └── js/
-│           └── app.js      # Client controller, Leaflet map engine & QR generator
-├── .gitignore              # Git ignore configuration
-├── LICENSE                 # Project license file
-└── README.md               # Project documentation & instructions
+│   ├── package.json                # Frontend dependencies (React, Vite, Tailwind, Recharts, Lucide)
+│   ├── vite.config.js              # Vite server & API proxy configuration
+│   ├── tailwind.config.js          # Tailwind CSS theme tokens
+│   ├── index.html                  # HTML entrypoint
+│   └── src/
+│       ├── App.jsx                 # Master application routing & layout
+│       ├── components/             # Reusable UI widgets (MetricCard, TrendChart, RiskHeatmapTable)
+│       ├── context/                # Authentication context & session state
+│       ├── pages/                  # Page views (StudentDashboard, FacultyDashboard, Simulator, Login)
+│       └── services/               # Axios API client & interceptors
+├── database/
+│   └── init.sql                    # Initial SQL schema for PostgreSQL deployment
+├── docker-compose.yml              # Multi-container orchestration (FastAPI + PostgreSQL)
+├── .gitignore                      # Git ignore configuration
+└── README.md                       # Project documentation & instructions
 ```
 
 ---
@@ -68,73 +72,87 @@ order-tracking-/
 ## 💻 Installation & Setup
 
 ### Prerequisites
-- Python 3.10+ installed.
-- MongoDB Server (Optional; automatic local JSON persistence fallback is included out-of-the-box).
+- **Python 3.10+** installed.
+- **Node.js 18+** and **npm** installed.
+- **Docker & Docker Compose** *(Optional; automatic local SQLite persistence fallback is included out-of-the-box)*.
+
+---
 
 ### 1. Clone / Extract Repository
 Ensure you are in the project root directory:
 ```bash
-git clone https://github.com/shyamsundarmd19-hub/order-tracking-.git
-cd order-tracking-
+git clone https://github.com/shyamsundarmd19-hub/student-risk.git
+cd student-risk
 ```
 
-### 2. Install Python Dependencies
+---
+
+### 2. Run with Docker Compose (Option A: Recommended)
+Orchestrates both the PostgreSQL database and the FastAPI backend in synchronized containers:
+```bash
+docker-compose up --build
+```
+- **Backend API & Swagger Docs**: `http://localhost:8000/api/v1/docs`
+- **PostgreSQL Database**: `localhost:5432`
+
+---
+
+### 3. Run Locally (Option B: Development Mode)
+
+#### Backend Setup
 ```bash
 cd backend
+python -m venv venv
+
+# On Windows:
+venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
+
 pip install -r requirements.txt
-```
-Or on Windows:
-```powershell
-py -3 -m pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
 ```
 
-### 3. Database Setup
-
-#### Option A: MongoDB Cloud / Local Server (Production Mode)
-Set the MongoDB connection string using environment variables:
+#### Frontend Setup
+In a separate terminal:
 ```bash
-export MONGO_URI="mongodb+srv://<username>:<password>@cluster.mongodb.net/?retryWrites=true&w=majority"
+cd frontend
+npm install
+npm run dev
 ```
-Or for local instances:
-```bash
-export MONGO_URI="mongodb://localhost:27017/"
-```
-
-#### Option B: Automatic In-Memory & JSON Fallback (Development Mode)
-If a local or remote MongoDB instance is not detected, the system automatically initializes a virtual database via `mongomock` paired with auto-saving JSON storage at `backend/data/orders.json` and `backend/data/settings.json`, ensuring zero data loss across server restarts without manual database installation.
-
-### 4. Run the Application
-```bash
-python app.py
-```
-Open your browser and visit: [http://127.0.0.1:5000](http://127.0.0.1:5000/)
+Open your browser and visit: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Live Demo & Endpoints
 
-- **Repository URL**: [https://github.com/shyamsundarmd19-hub/order-tracking-](https://github.com/shyamsundarmd19-hub/order-tracking-)
-- **Live Local Access**: [http://127.0.0.1:5000](http://127.0.0.1:5000/)
+- **Repository URL**: [https://github.com/shyamsundarmd19-hub/student-risk](https://github.com/shyamsundarmd19-hub/student-risk)
+- **Frontend Dashboard**: [http://localhost:3000](http://localhost:3000)
+- **Backend API Docs (Swagger UI)**: [http://localhost:8000/api/v1/docs](http://localhost:8000/api/v1/docs)
+- **ReDoc Documentation**: [http://localhost:8000/api/v1/redoc](http://localhost:8000/api/v1/redoc)
+- **Service Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
 
 ---
 
-## 🔑 Default Accounts & Sample Tracking Data (Created Automatically)
+## 🔑 Default Accounts & Sample Cohort Data (Created Automatically)
 
-| Role / Entity | Identifier | Default Password / OTP | Features Accessible |
+| Role / Entity | Identifier / Email | Default Password | Features Accessible |
 | :--- | :--- | :--- | :--- |
-| **Administrator** | Admin Portal | `admin123` | Operations Dashboard, Status Dispatcher, Delivery Verification, Settings, CSV Export |
-| **In-Transit Order** | `ORD1001` | OTP: `4821` | Live route rendering on interactive radar map, dynamic QR code pass |
-| **Delivered Order** | `ORD1002` | OTP: `7392` | Completed milestone history, verified 5-star customer review display |
-| **New Orders** | Auto-Generated (`ORD1003+`) | Unique 4-digit PIN | Instant placement, live tracking, order cancellation |
+| **Student** | `student@university.edu` | `StudentPass123!` | Personal Academic Trajectory, SHAP Explainability Breakdown, What-If Simulator, Custom Recommendations |
+| **Faculty / Advisor** | `faculty@university.edu` | `FacultyPass123!` | Cohort Risk Heatmap Matrix, At-Risk Student Flags, Departmental Grade Distribution, Batch Insights |
+| **At-Risk Sample 1** | `marcus.v@university.edu` | `StudentPass123!` | Predicted Score: 48.2% (Risk: 0.518), Flagged for Attendance & Continuous Assessment deficit |
+| **At-Risk Sample 2** | `elena.r@university.edu` | `StudentPass123!` | Predicted Score: 52.4% (Risk: 0.476), Flagged for Study Hours Deficit |
+| **High Achiever** | `aiden.p@university.edu` | `StudentPass123!` | Predicted Score: 90.2% (Risk: 0.098), Nominated for Honors Research Fellowship |
 
 ---
 
-## 🔒 Security Best Practices Implemented
+## 🔒 Security & Engineering Best Practices Implemented
 
-- **OTP Handover Verification**: Prevents unauthorized order completion by enforcing matching OTP inputs during courier delivery.
-- **PIN-Protected Admin Console**: Critical state transitions and hub settings restricted behind administrative authentication.
-- **CORS Negotiation**: Managed through Flask-CORS to prevent unauthorized cross-origin data extraction.
-- **Client-Side Sanitization**: Input validation across forms to prevent malformed data persistence in JSON/Mongo records.
+- **Explainable ML Transparency**: Integrated SHAP TreeExplainer ensures that all ML predictions are fully interpretable, eliminating black-box academic risk scoring.
+- **Bcrypt Password Encryption**: Industry-standard salt rounds with secure one-way password hashing.
+- **Stateless JWT Authorization**: Bearer token authentication verified on every protected API transaction.
+- **Pydantic v2 Schema Enforcement**: Strict request and response payload validation preventing injection and malformed parameter attacks.
+- **CORS Negotiation**: Granular CORS origin handling enabling secure communication between Vite frontend and FastAPI backend.
 
 ---
 
